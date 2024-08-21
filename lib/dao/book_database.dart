@@ -1,10 +1,11 @@
 // ignore_for_file: avoid_print
 
+import 'dart:convert';
+
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 
 import '../services/google_book_service.dart';
-
 
 class PersonalBookDatabase {
   static const String _tableName = "bookTable";
@@ -13,7 +14,7 @@ class PersonalBookDatabase {
   static const String _dayFinished = "dayFinished";
   static const String _comments = "comments";
   static const String _googleBook = "googleBook";
- 
+
   static const String createTableSQL =
       // ignore: prefer_adjacent_string_concatenation, prefer_interpolation_to_compose_strings
       "CREATE TABLE $_tableName($_id INTEGER NOT NULL PRIMARY KEY," +
@@ -24,7 +25,6 @@ class PersonalBookDatabase {
           ")";
 
   Future<Database> _getDatabase() async {
-
     final String path = join(await getDatabasesPath(), "book.db");
     return openDatabase(
       path,
@@ -114,15 +114,37 @@ class PersonalBookNotFindException implements Exception {}
 
 // These below are just examples. Need to create new models
 class PersonalBook {
-  int id = 0;
-  GoogleBook googleBook = GoogleBook(authors: "a", description: "b", id: "c", thumbnailLink: "d", title: "e");
+  int? id;
+  String dayStarted;
+  String dayFinished;
+  String comments;
 
-  PersonalBook.fromMap(Map<String, dynamic> map){
-    id = map["id"];
-    googleBook = map["googleBook"];
-  }
+  GoogleBook googleBook;
+
+  PersonalBook({
+    this.id,
+    required this.dayStarted,
+    required this.dayFinished,
+    required this.comments,
+    required this.googleBook,
+  });
+
+  PersonalBook.fromMap(Map<String, dynamic> map)
+      : id = map["id"],
+        dayStarted = map["dayStarted"],
+        dayFinished = map["dayFinished"],
+        comments = map["comments"],
+        googleBook = GoogleBook.fromJson(jsonDecode(map["googleBook"]));
 
   Map<String, dynamic> toMap() {
-    return {"id": id, "googleBook": googleBook};
+    return {
+      "id": id,
+      "googleBook": jsonEncode(
+        googleBook.toMap(),
+      ),
+      "dayStarted": dayStarted,
+      "dayFinished": dayFinished,
+      "comments": comments,
+    };
   }
 }
