@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_grimorio/login.dart';
-import 'package:flutter_grimorio/primary_button.dart';
+import 'package:flutter_grimorio/screens/login.dart';
+import 'package:flutter_grimorio/screens/components/primary_button.dart';
 import 'package:flutter_grimorio/theme.dart';
 import 'package:flutter_svg/svg.dart';
 
