@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_grimorio/models/google_book.dart';
 import 'package:flutter_grimorio/screens/components/display_text.dart';
 import 'package:flutter_grimorio/screens/components/entry.dart';
 import 'package:flutter_grimorio/screens/components/primary_button.dart';
@@ -16,11 +17,12 @@ class SearchBooks extends StatefulWidget {
 class _SearchBooksState extends State<SearchBooks> {
   final GoogleBooksService googleBooksService = GoogleBooksService();
   // Need to change list type
-  Future<List<dynamic>>? booksList;
+  Future<List<GoogleBook>>? booksList;
 
   @override
   Widget build(BuildContext context) {
-    return SafeArea(child: Container(
+    return SafeArea(
+        child: Container(
       decoration: AppBackgroundProperties.boxDecoration,
       child: Scaffold(
         appBar: AppBar(backgroundColor: AppColors.black),
@@ -39,13 +41,14 @@ class _SearchBooksState extends State<SearchBooks> {
                 child: Padding(
                   padding: const EdgeInsets.only(bottom: 32.0),
                   child: TextFormField(
-                    onChanged: (value){
+                    onChanged: (value) {
                       // Populate list of books from API
-                      // setState(() {
-                      //   booksList = googleBooksService.searchBooks(value);
-                      // });
+                      setState(() {
+                        booksList = googleBooksService.searchBooks(value);
+                      });
                     },
-                    decoration: InputDecorationProperties.newInputDecoration("Procure por título/autor(a)", "Busca", const Icon(Icons.search)),
+                    decoration: InputDecorationProperties.newInputDecoration(
+                        "Procure por título/autor(a)", "Busca", const Icon(Icons.search)),
                   ),
                 ),
               ),
@@ -53,7 +56,6 @@ class _SearchBooksState extends State<SearchBooks> {
             ],
           ),
         ),
-
       ),
     ));
   }
@@ -63,7 +65,7 @@ class _BooksList extends StatelessWidget {
   const _BooksList({super.key, required this.future});
 
   // Need to change list type
-  final Future<List<dynamic>>? future;
+  final Future<List<GoogleBook>>? future;
 
   @override
   Widget build(BuildContext context) {
@@ -75,13 +77,15 @@ class _BooksList extends StatelessWidget {
             break;
 
           case ConnectionState.waiting:
-            return const SliverFillRemaining(child: Center(child: CircularProgressIndicator()),);
-          
+            return const SliverFillRemaining(
+              child: Center(child: CircularProgressIndicator()),
+            );
+
           case ConnectionState.active:
             break;
 
           case ConnectionState.done:
-            if(snapshot.hasData || snapshot.data != []) {
+            if (snapshot.hasData || snapshot.data != []) {
               return SliverList.builder(
                 itemBuilder: (context, index) => InkWell(
                   onTap: () {
@@ -118,7 +122,8 @@ class _BooksList extends StatelessWidget {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 16.0),
-                                  child: Image.network(snapshot.data![index].thumbnailLink,
+                                  child: Image.network(
+                                    snapshot.data![index].thumbnailLink,
                                     height: 220,
                                     width: 144,
                                     fit: BoxFit.cover,
@@ -126,7 +131,8 @@ class _BooksList extends StatelessWidget {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 8.0),
-                                  child: Text(snapshot.data![index].title,
+                                  child: Text(
+                                    snapshot.data![index].title,
                                     style: ModalDecorationProperties.bookTitle,
                                   ),
                                 ),
@@ -134,28 +140,31 @@ class _BooksList extends StatelessWidget {
                                   padding: const EdgeInsets.only(bottom: 16.0),
                                   child: SizedBox(
                                     width: double.maxFinite,
-                                    child: Text(snapshot.data![index].authors,
+                                    child: Text(
+                                      snapshot.data![index].authors,
                                       style: ModalDecorationProperties.bookAuthor,
                                     ),
                                   ),
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(bottom: 24.0),
-                                  child: Text(snapshot.data![index].description,
+                                  child: Text(
+                                    snapshot.data![index].description,
                                     maxLines: 4,
                                     overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
-                                PrimaryButton(text: "Adicionar livro", onTap: () {
+                                PrimaryButton(
+                                    text: "Adicionar livro",
+                                    onTap: () {
                                       // Need a googleBook instance
-                                      // Navigator.push(
-                                      //     context,
-                                      //     MaterialPageRoute(
-                                      //         builder: (context) => NewEntry(
-                                      //               googleBook:
-                                      //                   snapshot.data![index],
-                                      //             )));
-                                })
+                                      Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) => NewEntry(
+                                                    googleBook: snapshot.data![index],
+                                                  )));
+                                    })
                               ],
                             ),
                           ),
@@ -163,7 +172,7 @@ class _BooksList extends StatelessWidget {
                       ),
                     );
                   },
-                  // child: Entry(book: snapshot.data![index]),
+                  child: Entry(googleBook: snapshot.data![index]),
                 ),
                 itemCount: snapshot.data!.length,
               );
@@ -175,5 +184,3 @@ class _BooksList extends StatelessWidget {
     );
   }
 }
-
-

@@ -16,11 +16,16 @@ class DisplayText extends StatelessWidget {
           padding: const EdgeInsets.only(right: 8.0),
           child: SvgPicture.asset(asset),
         ),
-        Text(text, style: DisplayTextProperties.textStyle,),
+        FittedBox(
+            child: Text(
+          text,
+          style: DisplayTextProperties.textStyle,
+        )),
         Padding(
           padding: const EdgeInsets.only(left: 8.0),
           child: SvgPicture.asset(asset),
         )
-    ],);
+      ],
+    );
   }
 }
